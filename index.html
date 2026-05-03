@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Linear Regression Learning Studio</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="hero">
+    <div>
+      <p class="eyebrow">Interactive Learning System</p>
+      <h1>Linear Regression Learning Studio</h1>
+      <p class="hero-copy">
+        Upload a CSV, preprocess it step by step, visualize the patterns, and train linear regression
+        with the math exposed instead of hidden.
+      </p>
+    </div>
+    <div class="hero-note">
+      <h2>Learning-first workflow</h2>
+      <p>Each stage explains what happens, why it matters, and how the numbers change.</p>
+    </div>
+  </header>
+
+  <main class="layout">
+    <aside class="sidebar">
+      <h2>Pipeline</h2>
+      <nav id="pipelineNav" class="pipeline-nav"></nav>
+      <section class="status-card">
+        <h3>Current Status</h3>
+        <ul id="statusList"></ul>
+      </section>
+    </aside>
+
+    <section class="content">
+      <details class="panel" open data-stage="dataset">
+        <summary>
+          <span>1. Dataset Input</span>
+          <small>Upload CSV and inspect the structure</small>
+        </summary>
+        <div class="panel-body">
+          <div class="grid two">
+            <div class="card accent">
+              <h3>Upload Dataset</h3>
+              <p class="muted">Choose a CSV file with a numeric target column.</p>
+              <input type="file" id="csvFile" accept=".csv,text/csv">
+              <button id="loadSampleBtn" class="secondary">Load Built-in Sample</button>
+              <p class="hint">Sample dataset models study hours, attendance, assignments, and marks.</p>
+            </div>
+            <div class="card">
+              <h3>Why this step?</h3>
+              <p>
+                A regression model only learns patterns from the columns you provide. Before training,
+                students should check data shape, types, and sample rows to avoid treating the dataset
+                like a black box.
+              </p>
+            </div>
+          </div>
+
+          <div class="grid two">
+            <div class="card">
+              <h3>Dataset Summary</h3>
+              <div id="datasetSummary" class="empty-state">Upload a CSV to see shape, column types, and target choices.</div>
+            </div>
+            <div class="card">
+              <h3>Preview</h3>
+              <div id="datasetPreview" class="table-wrap empty-state">No dataset loaded yet.</div>
+            </div>
+          </div>
+        </div>
+      </details>
+
+      <details class="panel" data-stage="preprocessing">
+        <summary>
+          <span>2. Preprocessing</span>
+          <small>Clean, encode, scale, and select features</small>
+        </summary>
+        <div class="panel-body">
+          <div class="grid two">
+            <div class="card">
+              <h3>Configuration</h3>
+              <label class="field">
+                <span>Target Column</span>
+                <select id="targetColumn"></select>
+              </label>
+              <label class="field">
+                <span>Missing Value Handling</span>
+                <select id="missingStrategy">
+                  <option value="mean_mode">Mean/Mode Imputation</option>
+                  <option value="drop">Drop Rows with Missing Values</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>Encoding</span>
+                <select id="encodingStrategy">
+                  <option value="onehot">One-Hot Encoding</option>
+                  <option value="label">Label Encoding</option>
+                  <option value="none">No Encoding</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>Feature Scaling</span>
+                <select id="scalingStrategy">
+                  <option value="standardize">Standardization (z-score)</option>
+                  <option value="normalize">Normalization (0 to 1)</option>
+                  <option value="none">No Scaling</option>
+                </select>
+              </label>
+              <div class="field">
+                <span>Feature Selection</span>
+                <div id="featureSelection" class="checkbox-grid empty-state">Load data to choose features.</div>
+              </div>
+              <button id="runPreprocessBtn">Apply Preprocessing</button>
+            </div>
+            <div class="card">
+              <h3>Educational Notes</h3>
+              <div id="preprocessNotes" class="explanation-stack">
+                <article>
+                  <h4>Missing values</h4>
+                  <p>Empty cells distort averages and gradients. Imputation keeps more data while preventing blank values from breaking the math.</p>
+                </article>
+                <article>
+                  <h4>Encoding</h4>
+                  <p>Regression needs numbers. Encoding converts category names into usable numeric inputs while preserving information.</p>
+                </article>
+                <article>
+                  <h4>Scaling</h4>
+                  <p>Scaling brings features to comparable ranges, which helps gradient descent converge more smoothly.</p>
+                </article>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid two">
+            <div class="card">
+              <h3>Before vs After</h3>
+              <div id="beforeAfterComparison" class="empty-state">Run preprocessing to compare the transformed dataset.</div>
+            </div>
+            <div class="card">
+              <h3>Processed Dataset Preview</h3>
+                            <div id="processedPreview" class="table-wrap empty-state">Processed data will appear here.</div>
+            </div>
+          </div>
+        </div>
+      </details>
+
+      <details class="panel" data-stage="eda">
+        <summary>
+          <span>3. Exploratory Data Analysis</span>
+          <small>Distributions, relationships, and correlation insights</small>
+        </summary>
+        <div class="panel-body">
+          <div class="grid three">
+            <div class="card">
+              <h3>Feature Explorer</h3>
+              <label class="field">
+                <span>Feature</span>
+                <select id="edaFeature"></select>
+              </label>
+              <p class="muted">Use this to compare a feature distribution and its relationship with the target.</p>
+            </div>
+            <div class="card">
+              <h3>What should students notice?</h3>
+              <p id="edaNarrative">
+                EDA helps students ask whether a feature has spread, outliers, or a visible trend with the target before trusting the model.
+              </p>
+            </div>
+            <div class="card">
+              <h3>Why this step?</h3>
+              <p>
+                If a feature barely changes, it may contribute little. If a feature moves with the target,
+                regression can often capture that trend with coefficients.
+              </p>
+            </div>
+          </div>
+
+          <div class="grid two">
+            <div class="card">
+              <h3>Distribution</h3>
+              <div id="histogramChart" class="chart empty-state">Select a processed feature to view its histogram.</div>
+            </div>
+            <div class="card">
+              <h3>Feature vs Target</h3>
+              <div id="scatterChart" class="chart empty-state">A relationship plot will appear here after preprocessing.</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Correlation Analysis</h3>
+            <div id="correlationMatrix" class="empty-state">Correlation values will appear once numeric processed features are available.</div>
+          </div>
+        </div>
+      </details>
+
+      <details class="panel" data-stage="learning">
+        <summary>
+          <span>4. Linear Regression Learning Module</span>
+          <small>Math intuition, formulas, and one worked example</small>
+        </summary>
+        <div class="panel-body">
+          <div class="grid two">
+            <div class="card">
+              <h3>Core Formulas</h3>
+              <div id="formulaPanel" class="formula-block"></div>
+            </div>
+            <div class="card">
+              <h3>Worked Sample</h3>
+              <div id="workedSample" class="empty-state">Train a model to generate a step-by-step numerical example.</div>
+            </div>
+          </div>
+
+          <div class="grid two">
+            <div class="card">
+              <h3>Simple vs Multiple Regression</h3>
+              <div id="regressionModes"></div>
+            </div>
+            <div class="card">
+              <h3>Intermediate Values</h3>
+              <div id="intermediateValues" class="empty-state">Loss, gradient updates, and sample errors will be summarized after training.</div>
+            </div>
+          </div>
+        </div>
+      </details>
+
+      <details class="panel" data-stage="training">
+        <summary>
+          <span>5. Training Configuration</span>
+          <small>Split ratio, k-fold validation, and optimizer settings</small>
+        </summary>
+        <div class="panel-body">
+          <div class="grid three">
+            <div class="card">
+              <h3>Train-Test Split</h3>
+              <label class="field">
+                <span>Training Ratio: <strong id="splitValue">80%</strong></span>
+                <input type="range" id="splitRatio" min="50" max="90" value="80">
+              </label>
+              <p class="muted">The remaining data becomes the test set.</p>
+            </div>
+            <div class="card">
+              <h3>Cross Validation</h3>
+              <label class="field">
+                <span>K-Folds</span>
+                <input type="number" id="kFolds" min="2" max="10" value="5">
+              </label>
+            </div>
+            <div class="card">
+              <h3>Gradient Descent</h3>
+              <label class="field">
+                <span>Learning Rate</span>
+                <input type="number" id="learningRate" min="0.001" step="0.001" value="0.05">
+              </label>
+              <label class="field">
+                <span>Iterations</span>
+                <input type="number" id="iterations" min="50" step="50" value="400">
+              </label>
+              <button id="trainModelBtn">Train Model</button>
+            </div>
+          </div>
+        </div>
+      </details>
+
+      <details class="panel" data-stage="results">
+        <summary>
+          <span>6. Model Training & Visualization</span>
+          <small>Parameters, line fit, and convergence</small>
+        </summary>
+        <div class="panel-body">
+          <div class="grid two">
+            <div class="card">
+              <h3>Learned Parameters</h3>
+              <div id="parameterTable" class="empty-state">Train the model to inspect coefficients and intercept.</div>
+            </div>
+            <div class="card">
+              <h3>Cost Convergence</h3>
+              <div id="costChart" class="chart empty-state">Gradient descent cost values will appear here.</div>
+            </div>
+          </div>
+
+          <div class="grid two">
+            <div class="card">
+              <h3>Regression Visualization</h3>
+              <div id="regressionChart" class="chart empty-state">If one feature is selected, the fitted line will be drawn here.</div>
+            </div>
+            <div class="card">
+              <h3>Predicted vs Actual</h3>
+              <div id="predictionComparison" class="chart empty-state">Train the model to compare predictions with actual values.</div>
+            </div>
+          </div>
+        </div>
+      </details>
+
+      <details class="panel" data-stage="prediction">
+        <summary>
+          <span>7. Prediction & Inference</span>
+          <small>Enter a new sample and inspect the computation</small>
+        </summary>
+        <div class="panel-body">
+          <div class="grid two">
+            <div class="card">
+              <h3>New Sample Input</h3>
+              <div id="predictionForm" class="empty-state">Train the model to unlock a prediction form.</div>
+            </div>
+            <div class="card">
+              <h3>Prediction Explanation</h3>
+              <div id="predictionExplanation" class="empty-state">The weighted sum and final prediction will be shown here.</div>
+            </div>
+          </div>
+        </div>
+      </details>
+
+      <details class="panel" data-stage="evaluation">
+        <summary>
+          <span>8. Evaluation Metrics</span>
+          <small>MSE, MAE, R², and cross-validation</small>
+        </summary>
+        <div class="panel-body">
+          <div class="grid three">
+            <div class="metric-card">
+              <span>MSE</span>
+              <strong id="mseMetric">-</strong>
+            </div>
+            <div class="metric-card">
+              <span>MAE</span>
+              <strong id="maeMetric">-</strong>
+            </div>
+            <div class="metric-card">
+              <span>R² Score</span>
+              <strong id="r2Metric">-</strong>
+            </div>
+          </div>
+          <div class="card">
+            <h3>Cross-Validation Results</h3>
+            <div id="cvResults" class="empty-state">K-fold results will appear here after training.</div>
+          </div>
+        </div>
+      </details>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>Designed for engineering students to learn linear regression transparently, interactively, and mathematically.</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
