@@ -21,7 +21,7 @@ This project is now a Python-based `Streamlit` machine learning application for 
 
 ## How To Run
 
-1. Open a terminal in `C:\Users\SANDIP\OneDrive\Documents\New project`
+1. Open a terminal in `C:\Users\\Documents\New project`
 2. Install dependencies:
 
 ```bash
