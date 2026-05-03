@@ -1,6 +1,0 @@
-{
-  "New project": {
-    "path": "./.",
-    "start": "python main.py"
-  }
-}
